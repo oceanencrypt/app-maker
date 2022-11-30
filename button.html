@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.11.0/brython.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/brython@3.11.0/brython_stdlib.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="button.css">
+    <title>Document</title>
+</head>
+<body onload="brython()">
+    <div>
+        <h1>Buttons</h1>
+        <div id="display-btn" style="display: flex; justify-content: space-between;">
+
+        </div>
+    </div>
+    <script type="text/python" id="0">
+        from browser import document, ajax, console, window, bind
+        jq = window.jQuery
+
+        def renderBtn(value):
+            type_detail = value["type"].split('_')[:-1]
+            return f"""
+            <div class="{'-'.join(type_detail)}-item-wrapper">
+                <button class="{'-'.join(type_detail)}-button" id="{'-'.join(type_detail)}-id">{value["label"]}</button>
+            </div>
+            """
+            
+
+        url = "https://app-maker1.free.beeceptor.com/"
+
+        def on_complete(req):
+            import json
+            data = json.loads(req.responseText)
+            for val in data:
+                jq("#display-btn").append(renderBtn(data[val]))
+                type_detail = data[val]["type"].split('_')[:-1]
+            @bind(document['tool-bar-id'], "click")
+            def click(ev):
+                document['tool-bar-id'].style.backgroundColor = "#3e8e41"
+            
+            @bind(document['tool-detail-id'], "click")
+            def click(ev):
+                document['tool-detail-id'].style.backgroundColor = "#3e8e41"
+            
+            @bind(document['nav-bar-id'], "click")
+            def click(ev):
+                document['nav-bar-id'].style.backgroundColor = "#3e8e41"
+                
+        def renderer():
+            req = ajax.ajax()
+            req.open("GET", url, True)
+            req.bind("complete", on_complete)
+            req.send()
+        
+        renderer()
+    </script>
+</body>
+</html>
